@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IELTS Practice</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind config: Poppins font qo‘shiladi -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: ["Poppins", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="font-poppins bg-gray-100 p-4 text-sm sm:text-base">
+    <div class="max-w-2xl mx-auto bg-white shadow p-6 rounded">
+      <!-- Header -->
+      <div class="relative w-full py-4 border-b border-gray-200">
+        <div class="flex justify-between items-center w-full">
+          <div class="text-xl font-semibold">TEST 1</div>
+        </div>
+        <h2
+          class="absolute text-rose-700 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-medium"
+        >
+          Listening
+        </h2>
+      </div>
+
+      <!-- Part 1 Info -->
+      <div class="mt-4">
+        <div class="text-lg font-medium text-gray-700">PART 1: Questions 1–10</div>
+        <p class="text-rose-700">Complete the notes below...</p>
+        <p class="text-sm text-gray-700">
+          Write one word and/or a number for each answer.
+        </p>
+      </div>
+
+      <!-- Questions Section -->
+      <div class="mt-6 space-y-6 text-sm border border-gray-200 p-5 text-gray-800 ">
+        <!-- The park -->
+        <div>
+          <h3 class="font-semibold">The park</h3>
+          <p>
+            Area:  <span class="text-black">1</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1 outline-none" />
+            hectares
+          </p>
+          <p>Habitats: wetland, grassland and woodland</p>
+          <p>
+            Wetland: lakes, ponds and a  <span class="text-black">2</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />
+          </p>
+          <p>Wildlife includes birds, insects and animals</p>
+        </div>
+
+        <!-- Subjects studied -->
+        <div>
+          <h3 class="font-semibold">
+            Subjects studied in educational visits include
+          </h3>
+          <p>
+            Science: Children look at  <span class="text-black">3</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />
+            about plants, etc.
+          </p>
+          <p>
+            Geography: includes learning to use a  <span class="text-black">4</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />
+            and compass
+          </p>
+          <p>History: changes in land use</p>
+          <p>
+            Leisure and tourism: mostly concentrates on the park’s  <span class="text-black">5</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />
+          </p>
+          <p>
+            Music: Children make  <span class="text-black">6</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />
+            with natural materials, and experiment with rhythm and speed.
+          </p>
+        </div>
+
+        <!-- Benefits -->
+        <div>
+          <h3 class="font-semibold">Benefits of outdoor educational visits</h3>
+          <p>
+            They give children a feeling of  <span class="text-black">7</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />
+            that they may not have elsewhere.
+          </p>
+          <p>
+            Children learn new  <span class="text-black">8</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />
+            and gain self-confidence.
+          </p>
+        </div>
+
+        <!-- Practical issues -->
+        <div>
+          <h3 class="font-semibold">Practical issues</h3>
+          <p>
+            Cost per child:   <span class="text-black">9</span>£
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-16 mx-1" />
+          </p>
+          <p>
+            Adults, such as  <span class="text-black">10</span>
+            <input type="text" class="outline-none font-semibold text-rose-700 transition border-b border-black w-32 mx-1" />,
+            free
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scriptlar -->
+    <script src="./readingData.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
