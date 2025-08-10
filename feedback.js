@@ -14,8 +14,14 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+let currentUID = null;
+
 // Anonim login
-auth.signInAnonymously().catch(e => console.warn("Anon login failed", e));
+auth.signInAnonymously()
+  .then(userCred => {
+    currentUID = userCred.user.uid;
+  })
+  .catch(e => console.warn("Anon login failed", e));
 
 // === Elements ===
 const feedbackList = document.getElementById('feedbackList');
@@ -23,10 +29,10 @@ const feedbackInput = document.getElementById('feedbackInput');
 const feedbackName = document.getElementById('feedbackName');
 const sendBtn = document.getElementById('feedbackSendBtn');
 
-// === Realtime listener (faqat bitta marta to‘liq yangilaydi) ===
+// === Realtime listener ===
 db.collection('feedbacks').orderBy('createdAt', 'asc')
   .onSnapshot(snapshot => {
-    feedbackList.innerHTML = ''; // eski DOM tozalash
+    feedbackList.innerHTML = '';
     snapshot.forEach(doc => {
       const d = doc.data();
       renderMessage(doc.id, d);
@@ -50,31 +56,35 @@ function renderMessage(id, d) {
   content.appendChild(meta);
   content.appendChild(txt);
 
-  // Delete button
-  const delBtn = document.createElement('button');
-  delBtn.textContent = '✖';
-  delBtn.className = 'text-red-500 hover:text-red-700 text-xs';
-  delBtn.onclick = async () => {
-    if (confirm("Bu xabarni o‘chirishni xohlaysizmi?")) {
-      await db.collection('feedbacks').doc(id).delete();
-    }
-  };
-
   item.appendChild(content);
-  item.appendChild(delBtn);
+
+  // Delete button — faqat o‘z xabari bo‘lsa
+  if (d.uid === currentUID) {
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '✖';
+    delBtn.className = 'text-red-500 hover:text-red-700 text-xs';
+    delBtn.onclick = async () => {
+      if (confirm("Bu xabarni o‘chirishni xohlaysizmi?")) {
+        await db.collection('feedbacks').doc(id).delete();
+      }
+    };
+    item.appendChild(delBtn);
+  }
+
   feedbackList.appendChild(item);
 }
 
 // === Send message ===
 sendBtn.addEventListener('click', async () => {
   const text = feedbackInput.value.trim();
-  if (!text) return;
+  if (!text || !currentUID) return;
 
   sendBtn.disabled = true;
   const name = feedbackName.value.trim() || 'Anonim';
 
   try {
     await db.collection('feedbacks').add({
+      uid: currentUID, // foydalanuvchi ID
       name,
       text,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
