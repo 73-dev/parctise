@@ -1,4 +1,4 @@
-// === Tanlangan matnni span bilan o'rash ===
+// === Tanlangan matnni span bilan o'rash (mobil + desktop ishlaydi) ===
 function wrapSelection(className, noteText) {
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
@@ -9,7 +9,11 @@ function wrapSelection(className, noteText) {
   span.className = className;
   if (noteText) span.setAttribute('data-note', noteText);
 
-  range.surroundContents(span);
+  // Tanlangan kontentni olib span ichiga solamiz (surroundContents cheklovidan qochish uchun)
+  const contents = range.extractContents();
+  span.appendChild(contents);
+
+  range.insertNode(span);
   selection.removeAllRanges();
 }
 
@@ -109,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // PC uchun
   document.addEventListener('mouseup', handleSelectionEvent);
 
-  // Mobil uchun
+  // Mobil uchun (touchend bilan)
   document.addEventListener('touchend', () => {
     setTimeout(handleSelectionEvent, 100);
   });
