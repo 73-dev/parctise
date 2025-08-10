@@ -57,3 +57,41 @@
 .float-btn:hover {
   background: rgba(255,255,255,0.15);
 }
+#feedbackSection {
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+  font-family: sans-serif;
+}
+
+.feedback-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.feedback-item {
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 5px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+#feedbackInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+#feedbackSendBtn {
+  padding: 6px 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#feedbackSendBtn:hover {
+  background: #45a049;
+}
