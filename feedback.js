@@ -14,14 +14,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUID = null;
-
 // Anonim login
-auth.signInAnonymously()
-  .then(userCred => {
-    currentUID = userCred.user.uid;
-  })
-  .catch(e => console.warn("Anon login failed", e));
+auth.signInAnonymously().catch(e => console.warn("Anon login failed", e));
 
 // === Elements ===
 const feedbackList = document.getElementById('feedbackList');
@@ -32,59 +26,42 @@ const sendBtn = document.getElementById('feedbackSendBtn');
 // === Realtime listener ===
 db.collection('feedbacks').orderBy('createdAt', 'asc')
   .onSnapshot(snapshot => {
-    feedbackList.innerHTML = '';
+    feedbackList.innerHTML = ''; // eski DOM tozalash
     snapshot.forEach(doc => {
       const d = doc.data();
-      renderMessage(doc.id, d);
+      renderMessage(d);
     });
     feedbackList.scrollTop = feedbackList.scrollHeight;
   });
 
-// === Render message ===
-function renderMessage(id, d) {
+// === Render message (faqat matn va meta) ===
+function renderMessage(d) {
   const item = document.createElement('div');
-  item.className = 'p-3 rounded bg-slate-50 border shadow-sm flex justify-between items-start mb-2';
+  item.className = 'p-3 rounded bg-slate-50 border shadow-sm mb-2';
 
-  // Content
-  const content = document.createElement('div');
   const meta = document.createElement('div');
   meta.className = 'text-xs text-gray-500 mb-1';
   meta.textContent = `${d.name || 'Anonim'} • ${d.createdAt ? d.createdAt.toDate().toLocaleString() : ''}`;
+
   const txt = document.createElement('div');
   txt.className = 'text-sm text-gray-800';
   txt.textContent = d.text || '';
-  content.appendChild(meta);
-  content.appendChild(txt);
 
-  item.appendChild(content);
-
-  // Delete button — faqat o‘z xabari bo‘lsa
-  if (d.uid === currentUID) {
-    const delBtn = document.createElement('button');
-    delBtn.textContent = '✖';
-    delBtn.className = 'text-red-500 hover:text-red-700 text-xs';
-    delBtn.onclick = async () => {
-      if (confirm("Bu xabarni o‘chirishni xohlaysizmi?")) {
-        await db.collection('feedbacks').doc(id).delete();
-      }
-    };
-    item.appendChild(delBtn);
-  }
-
+  item.appendChild(meta);
+  item.appendChild(txt);
   feedbackList.appendChild(item);
 }
 
 // === Send message ===
 sendBtn.addEventListener('click', async () => {
   const text = feedbackInput.value.trim();
-  if (!text || !currentUID) return;
+  if (!text) return;
 
   sendBtn.disabled = true;
   const name = feedbackName.value.trim() || 'Anonim';
 
   try {
     await db.collection('feedbacks').add({
-      uid: currentUID, // foydalanuvchi ID
       name,
       text,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
