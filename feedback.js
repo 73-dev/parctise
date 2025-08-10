@@ -11,11 +11,7 @@ const firebaseConfig = {
 
 // Init Firebase
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const db = firebase.firestore();
-
-// Anonim login
-auth.signInAnonymously().catch(e => console.warn("Anon login failed", e));
 
 // === Elements ===
 const feedbackList = document.getElementById('feedbackList');
@@ -23,13 +19,16 @@ const feedbackInput = document.getElementById('feedbackInput');
 const feedbackName = document.getElementById('feedbackName');
 const sendBtn = document.getElementById('feedbackSendBtn');
 
+// Mobil scroll uchun style
+feedbackList.style.overflowY = "auto";
+feedbackList.style.WebkitOverflowScrolling = "touch";
+
 // === Realtime listener ===
 db.collection('feedbacks').orderBy('createdAt', 'asc')
   .onSnapshot(snapshot => {
     feedbackList.innerHTML = ''; // eski DOM tozalash
     snapshot.forEach(doc => {
-      const d = doc.data();
-      renderMessage(d);
+      renderMessage(doc.data());
     });
     feedbackList.scrollTop = feedbackList.scrollHeight;
   });
