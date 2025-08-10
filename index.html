@@ -696,13 +696,15 @@
       <button id="clearAllBtn" class="float-btn">Clear All</button>
     </div>
 
-    <div id="feedbackSection" style="margin-top:40px;">
-      <h3>💬 Fikr va izohlaringiz</h3>
-      <div id="feedbackList" class="feedback-list"></div>
+    <div id="feedbackSection">
+  <h3>💬 Fikrlar (Realtime)</h3>
+  <div id="feedbackList" class="feedback-list"></div>
+  <textarea id="feedbackInput" placeholder="Fikr yoki savol yozing..." rows="3"></textarea>
+  <input id="feedbackName" placeholder="Ismingiz (ixtiyoriy)" />
+  <button id="feedbackSendBtn">Yuborish</button>
+</div>
+<script type="module" src="/feedback.js"></script>
 
-      <textarea id="feedbackInput" placeholder="Fikringizni yozing..." rows="3"></textarea>
-      <button id="feedbackSendBtn">Yuborish</button>
-    </div>
 
 
 
@@ -713,7 +715,11 @@
   </div>
   <!-- Scriptlar -->
   <script src="./script.js"></script>
+  <script src="./firebase.js"></script>
+  <script src="./package-lock.json"></script>
+  <script src="./package.json"></script>
   <script src="./highlight.js"></script>
+  <script src="./firebase-debug.log"></script>
   <script src="./timeraudio.js"></script>
   <script src="./feedback.js"></script>
 
