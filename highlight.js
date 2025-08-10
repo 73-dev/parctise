@@ -1,52 +1,58 @@
-// === Tanlangan matnni o'rash (ko'p qatorda ham ishlaydi) ===
-function wrapSelection(className, noteText) {
+let savedSelection = null;
+
+// === Selection’ni saqlash ===
+function saveSelection() {
   const selection = window.getSelection();
-  if (!selection.rangeCount) return;
-  const range = selection.getRangeAt(0);
-  if (range.collapsed) return;
+  if (selection.rangeCount > 0) {
+    savedSelection = selection.getRangeAt(0).cloneRange();
+  }
+}
 
-  // Tanlov ichidagi highlight yoki note’larni olib tashlaymiz (nested bo‘lishini oldini olish)
-  const tempDiv = document.createElement('div');
-  tempDiv.appendChild(range.cloneContents());
-  tempDiv.querySelectorAll('.highlight, .note').forEach(span => {
-    const parent = span.parentNode;
-    while (span.firstChild) parent.insertBefore(span.firstChild, span);
-    span.remove();
-  });
+// === Saqlangan selection’dan foydalanish ===
+function restoreSelection() {
+  if (!savedSelection) return null;
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(savedSelection);
+  return savedSelection;
+}
 
-  // Yangi span yaratish
+// === Tanlangan matnni span bilan o‘rash (mobil + desktop) ===
+function wrapSavedSelection(className, noteText) {
+  const range = restoreSelection();
+  if (!range || range.collapsed) return;
+
   const span = document.createElement('span');
   span.className = className;
   if (noteText) span.setAttribute('data-note', noteText);
-  span.appendChild(tempDiv);
 
-  range.deleteContents();
+  const contents = range.extractContents();
+  span.appendChild(contents);
   range.insertNode(span);
-  selection.removeAllRanges();
+
+  savedSelection = null;
+  window.getSelection().removeAllRanges();
 }
 
-// === Highlight qo'shish ===
+// === Highlight qo‘shish ===
 function highlightSelection() {
-  wrapSelection('highlight');
+  wrapSavedSelection('highlight');
   hideFloatingMenu();
 }
 
-// === Note qo'shish ===
+// === Note qo‘shish ===
 function addNoteToSelection() {
   const noteText = prompt("Note matnini kiriting:");
-  if (noteText) wrapSelection('note', noteText);
+  if (noteText) wrapSavedSelection('note', noteText);
   hideFloatingMenu();
 }
 
-// === Faqat tanlangan highlightni o'chirish ===
+// === Tanlangan highlightlarni o‘chirish ===
 function clearHighlight() {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) return;
-  const range = selection.getRangeAt(0);
-  if (range.collapsed) return;
+  const range = restoreSelection();
+  if (!range || range.collapsed) return;
 
-  const highlights = document.querySelectorAll('.highlight');
-  highlights.forEach(span => {
+  document.querySelectorAll('.highlight').forEach(span => {
     if (range.intersectsNode(span)) {
       const parent = span.parentNode;
       while (span.firstChild) parent.insertBefore(span.firstChild, span);
@@ -54,27 +60,22 @@ function clearHighlight() {
     }
   });
 
+  savedSelection = null;
+  window.getSelection().removeAllRanges();
   hideFloatingMenu();
 }
 
 // === Hammasini tozalash ===
 function clearAllCustom() {
-  document.querySelectorAll('input[type="text"], textarea').forEach(i => i.value = '');
-  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(i => i.checked = false);
-
   document.querySelectorAll('.highlight, .note').forEach(span => {
     const parent = span.parentNode;
     while (span.firstChild) parent.insertBefore(span.firstChild, span);
     span.remove();
   });
-
-  const res = document.getElementById('quiz-results-container');
-  if (res) res.remove();
-
   hideFloatingMenu();
 }
 
-// === Menyuni ko'rsatish ===
+// === Menyuni joylashtirish ===
 function showFloatingMenu(x, y) {
   const menu = document.getElementById('floatingMenu');
   if (menu) {
@@ -97,31 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const cBtn = document.getElementById('clearHighlightBtn');
   const caBtn = document.getElementById('clearAllBtn');
 
-  if (hBtn) hBtn.addEventListener('mousedown', e => { e.preventDefault(); highlightSelection(); });
-  if (nBtn) nBtn.addEventListener('mousedown', e => { e.preventDefault(); addNoteToSelection(); });
-  if (cBtn) cBtn.addEventListener('mousedown', e => { e.preventDefault(); clearHighlight(); });
-  if (caBtn) caBtn.addEventListener('mousedown', e => { e.preventDefault(); clearAllCustom(); });
-
-  // Touch versiya tugmalarini ham ishlatish
-  [hBtn, nBtn, cBtn, caBtn].forEach(btn => {
-    if (btn) btn.addEventListener('touchend', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      btn.click();
+  // Tugma bosishda selection yo‘qolmasligi uchun touchstart + mousedown
+  [[hBtn, highlightSelection], [nBtn, addNoteToSelection], [cBtn, clearHighlight], [caBtn, clearAllCustom]]
+    .forEach(([btn, handler]) => {
+      if (!btn) return;
+      btn.addEventListener('mousedown', e => { e.preventDefault(); handler(); });
+      btn.addEventListener('touchstart', e => { e.preventDefault(); handler(); }, { passive: false });
     });
-  });
 
   function handleSelectionEvent() {
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed) {
+      saveSelection();
       const rect = selection.getRangeAt(0).getBoundingClientRect();
       const menu = document.getElementById('floatingMenu');
       const menuWidth = menu ? menu.offsetWidth : 120;
       const menuHeight = menu ? menu.offsetHeight : 30;
 
-      // Menyuni tizim popup’iga yaqinroq chiqarish
-      const x = rect.left + window.scrollX;
-      const y = rect.bottom + window.scrollY + 5;
+      const x = rect.left + window.scrollX + (rect.width / 2) - (menuWidth / 2);
+      const y = rect.bottom + window.scrollY + 6; // pastroqqa chiqadi
 
       showFloatingMenu(x, y);
     } else {
@@ -129,12 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Tez reaksiya uchun selectionchange ishlatamiz
-  document.addEventListener('selectionchange', () => {
-    setTimeout(handleSelectionEvent, 10);
+  // Desktop
+  document.addEventListener('mouseup', handleSelectionEvent);
+
+  // Mobile (Google menu bilan yonma-yon chiqishi uchun kichik delay bilan)
+  document.addEventListener('touchend', () => {
+    setTimeout(handleSelectionEvent, 50);
   });
 
-  // Menyudan tashqariga bosilganda yopish
+  // Tashqariga bosganda menyuni yopish
   document.addEventListener('click', e => {
     const menu = document.getElementById('floatingMenu');
     if (menu && !menu.contains(e.target) && window.getSelection().isCollapsed) {
