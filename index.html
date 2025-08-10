@@ -29,12 +29,68 @@
   </script>
 </head>
 
-<body class="font-poppins bg-gray-100 p-4 text-sm sm:text-base">
+<body class="font-poppins bg-gray-100 p- text-sm sm:text-base">
 
-  <div class="max-w-2xl mx-auto bg-white shadow pl-6 pr-6 pb-6 pt-0 rounded">
+
+  
+
+  <div class="max-w-2xl mx-auto bg-white shadow pl-6 pr-6 pb-6 pt-6 rounded mb-10">
+    <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full">
+    <!-- Play/Pause button -->
+    <button id="playBtn" aria-label="Play" class="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 hover:bg-gray-200 focus:outline-none">
+      <!-- Play SVG (swap to Pause when playing) -->
+      <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-700 hidden" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19h4V5H6v14zM14 5v14h4V5h-4z"/>
+      </svg>
+    </button>
+
+    <!-- Small progress + times -->
+    <div class="flex items-center gap-3 flex-1 min-w-0">
+      <div class="flex items-center gap-2 min-w-0 w-full">
+        <input id="seek" type="range" min="0" value="0" step="0.1" class="w-full h-1 accent-rose-600 bg-gray-200 rounded-lg" />
+      </div>
+      <div class="flex flex-col items-end text-xs w-20 min-w-[80px]">
+        <span id="curTime" class="text-gray-600">00:00</span>
+        <span id="totTime" class="text-gray-500">00:00</span>
+      </div>
+    </div>
+
+    <!-- Timer badge -->
+    <div class="flex items-center gap-2">
+      <div id="countdown" class="bg-rose-700 text-white text-sm font-medium px-3 py-1 rounded-full tabular-nums">60:00</div>
+
+      <!-- Timer pause/resume -->
+      <button id="timerToggle" aria-label="Pause timer" class="w-8 h-8 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center justify-center focus:outline-none" title="Pause / Resume timer">
+        <svg id="timerPauseIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19h4V5H6v14zM14 5v14h4V5h-4z"/>
+        </svg>
+        <svg id="timerPlayIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-700 hidden" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+
+      <!-- Timer restart -->
+      <button id="timerRestart" aria-label="Restart timer" class="w-8 h-8 rounded-md bg-gray-100 hover:bg-gray-200 flex items-center justify-center focus:outline-none" title="Restart timer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 6V3L8 7l4 4V8c2.8 0 5 2.2 5 5 0 2.8-2.2 5-5 5s-5-2.2-5-5H5c0 4.4 3.6 8 8 8s8-3.6 8-8c0-4.4-3.6-8-8-8z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hidden audio element (use your file) -->
+  <audio id="audio" preload="metadata">
+    <source src="audio1.mp3" type="audio/mpeg" />
+    Your browser does not support the audio element.
+  </audio>
+    
     <!-- Header -->
     <div class="relative w-full py-4 border-b border-gray-200">
-      <object type="text/html" data="timeraudio.html" style="width:100%; height:150px;"></object>
+      
+
       <div class="flex justify-between items-center w-full">
         <!-- Asosiy HTML ichida -->
 
@@ -620,12 +676,12 @@
       <button id="restartBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Restart</button>
     </div>
 
-     <div id="floatingMenu" class="floating-menu">
-    <button id="highlightBtn" class="float-btn">Highlight</button>
-    <button id="noteBtn" class="float-btn">Note</button>
-    <button id="clearHighlightBtn" class="float-btn">Clear</button>
-    <button id="clearAllBtn" class="float-btn">Clear All</button>
-  </div>
+    <div id="floatingMenu" class="floating-menu">
+      <button id="highlightBtn" class="float-btn">Highlight</button>
+      <button id="noteBtn" class="float-btn">Note</button>
+      <button id="clearHighlightBtn" class="float-btn">Clear</button>
+      <button id="clearAllBtn" class="float-btn">Clear All</button>
+    </div>
 
 
 
@@ -638,6 +694,7 @@
   <!-- Scriptlar -->
   <script src="./script.js"></script>
   <script src="./highlight.js"></script>
+  <script src="./timeraudio.js"></script>
 
 </body>
 
