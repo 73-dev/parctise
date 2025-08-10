@@ -17,6 +17,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Tailwind config: Poppins font qo‘shiladi -->
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -696,16 +700,25 @@
       <button id="clearAllBtn" class="float-btn">Clear All</button>
     </div>
 
-    <div id="feedbackSection">
-  <h3>💬 Fikrlar (Realtime)</h3>
-  <div id="feedbackList" class="feedback-list"></div>
-  <textarea id="feedbackInput" placeholder="Fikr yoki savol yozing..." rows="3"></textarea>
-  <input id="feedbackName" placeholder="Ismingiz (ixtiyoriy)" />
-  <button id="feedbackSendBtn">Yuborish</button>
-</div>
-<script type="module" src="/feedback.js"></script>
+<div class="max-w-lg mx-auto bg-white p-4 rounded shadow">
+    <h1 class="text-xl font-bold mb-3">💬 Realtime Feedback</h1>
 
+    <!-- Chat messages -->
+    <div id="feedbackList" class="h-64 overflow-y-auto border rounded p-2 mb-3 bg-gray-50"></div>
 
+    <!-- Name input -->
+    <input id="feedbackName" type="text" placeholder="Ismingiz (ixtiyoriy)"
+      class="border p-2 w-full mb-2 rounded">
+
+    <!-- Message input -->
+    <textarea id="feedbackInput" placeholder="Xabaringiz..."
+      class="border p-2 w-full mb-2 rounded"></textarea>
+
+    <!-- Send button -->
+    <button id="feedbackSendBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full">
+      Yuborish
+    </button>
+  </div>
 
 
 
@@ -714,12 +727,12 @@
   </div>
   </div>
   <!-- Scriptlar -->
+   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="./script.js"></script>
   <script src="./firebase.js"></script>
-  <script src="./package-lock.json"></script>
-  <script src="./package.json"></script>
   <script src="./highlight.js"></script>
-  <script src="./firebase-debug.log"></script>
   <script src="./timeraudio.js"></script>
   <script src="./feedback.js"></script>
 
