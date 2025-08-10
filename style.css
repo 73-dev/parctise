@@ -1,0 +1,59 @@
+.highlight {
+  background-color: yellow;
+}
+
+.note {
+  background-color: lightblue;
+  position: relative;
+  border-radius: 4px;
+  padding: 0 2px;
+  cursor: pointer;
+}
+
+.note::after {
+  content: attr(data-note);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.note:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.floating-menu {
+  position: absolute;
+  background: #222;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  display: none;
+  padding: 4px;
+  gap: 4px;
+  z-index: 9999;
+}
+
+.float-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.float-btn:hover {
+  background: rgba(255,255,255,0.15);
+}

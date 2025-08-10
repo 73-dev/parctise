@@ -3,7 +3,6 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- TELEFONDA HAM KATTA EKRAN SIFATIDA KO'RINADI -->
   <meta name="viewport" content="width=650" />
 
@@ -11,6 +10,7 @@
 
   <!-- Google Fonts: Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css">
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -614,19 +614,31 @@
       </div>
     </div>
 
+    <!-- Add these buttons somewhere near the bottom of the test container -->
+    <div class="flex gap-3 mt-6">
+      <button id="submitBtn" class="px-4 py-2 bg-rose-600 text-white rounded hover:bg-rose-700">Submit</button>
+      <button id="restartBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Restart</button>
+    </div>
+
+     <div id="floatingMenu" class="floating-menu">
+    <button id="highlightBtn" class="float-btn">Highlight</button>
+    <button id="noteBtn" class="float-btn">Note</button>
+    <button id="clearHighlightBtn" class="float-btn">Clear</button>
+    <button id="clearAllBtn" class="float-btn">Clear All</button>
+  </div>
 
 
 
 
 
 
-    
 
   </div>
   </div>
   <!-- Scriptlar -->
-  <script src="./readingData.js"></script>
   <script src="./script.js"></script>
+  <script src="./highlight.js"></script>
+
 </body>
 
 </html>
