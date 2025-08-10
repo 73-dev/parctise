@@ -9,10 +9,8 @@ function wrapSelection(className, noteText) {
   span.className = className;
   if (noteText) span.setAttribute('data-note', noteText);
 
-  // Tanlangan kontentni olib span ichiga solamiz (surroundContents cheklovidan qochish uchun)
   const contents = range.extractContents();
   span.appendChild(contents);
-
   range.insertNode(span);
   selection.removeAllRanges();
 }
@@ -73,6 +71,7 @@ function showFloatingMenu(x, y) {
     menu.style.left = x + 'px';
     menu.style.top = y + 'px';
     menu.style.display = 'flex';
+    menu.style.zIndex = 9999; // har doim eng tepada
   }
 }
 
@@ -110,12 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // PC uchun
-  document.addEventListener('mouseup', handleSelectionEvent);
-
-  // Mobil uchun (touchend bilan)
-  document.addEventListener('touchend', () => {
-    setTimeout(handleSelectionEvent, 100);
+  // Tez ishlashi uchun selectionchange ishlatamiz
+  document.addEventListener('selectionchange', () => {
+    setTimeout(handleSelectionEvent, 10);
   });
 
   // Tashqariga bosilganda menyuni yopish
@@ -125,4 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
       hideFloatingMenu();
     }
   });
+
+  // Mobil tizim popup'ni kamaytirish
+  document.addEventListener('touchstart', e => {
+    if (document.getElementById('floatingMenu')?.contains(e.target)) {
+      e.preventDefault();
+    }
+  }, { passive: false });
 });
