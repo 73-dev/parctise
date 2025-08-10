@@ -1,16 +1,26 @@
-// === Tanlangan matnni span bilan o'rash (mobil + desktop ishlaydi) ===
+// === Tanlangan matnni o'rash (ko'p qatorda ham ishlaydi) ===
 function wrapSelection(className, noteText) {
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
   const range = selection.getRangeAt(0);
   if (range.collapsed) return;
 
+  // Tanlov ichidagi highlight yoki note’larni olib tashlaymiz (nested bo‘lishini oldini olish)
+  const tempDiv = document.createElement('div');
+  tempDiv.appendChild(range.cloneContents());
+  tempDiv.querySelectorAll('.highlight, .note').forEach(span => {
+    const parent = span.parentNode;
+    while (span.firstChild) parent.insertBefore(span.firstChild, span);
+    span.remove();
+  });
+
+  // Yangi span yaratish
   const span = document.createElement('span');
   span.className = className;
   if (noteText) span.setAttribute('data-note', noteText);
+  span.appendChild(tempDiv);
 
-  const contents = range.extractContents();
-  span.appendChild(contents);
+  range.deleteContents();
   range.insertNode(span);
   selection.removeAllRanges();
 }
@@ -28,7 +38,7 @@ function addNoteToSelection() {
   hideFloatingMenu();
 }
 
-// === Tanlangan highlightlarni o'chirish ===
+// === Faqat tanlangan highlightni o'chirish ===
 function clearHighlight() {
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
@@ -40,7 +50,7 @@ function clearHighlight() {
     if (range.intersectsNode(span)) {
       const parent = span.parentNode;
       while (span.firstChild) parent.insertBefore(span.firstChild, span);
-      parent.removeChild(span);
+      span.remove();
     }
   });
 
@@ -55,7 +65,7 @@ function clearAllCustom() {
   document.querySelectorAll('.highlight, .note').forEach(span => {
     const parent = span.parentNode;
     while (span.firstChild) parent.insertBefore(span.firstChild, span);
-    parent.removeChild(span);
+    span.remove();
   });
 
   const res = document.getElementById('quiz-results-container');
@@ -64,14 +74,14 @@ function clearAllCustom() {
   hideFloatingMenu();
 }
 
-// === Menyuni joylashtirish ===
+// === Menyuni ko'rsatish ===
 function showFloatingMenu(x, y) {
   const menu = document.getElementById('floatingMenu');
   if (menu) {
-    menu.style.left = x + 'px';
-    menu.style.top = y + 'px';
+    menu.style.left = `${x}px`;
+    menu.style.top = `${y}px`;
     menu.style.display = 'flex';
-    menu.style.zIndex = 9999; // har doim eng tepada
+    menu.style.zIndex = 9999;
   }
 }
 
@@ -87,10 +97,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const cBtn = document.getElementById('clearHighlightBtn');
   const caBtn = document.getElementById('clearAllBtn');
 
-  if (hBtn) hBtn.addEventListener('click', highlightSelection);
-  if (nBtn) nBtn.addEventListener('click', addNoteToSelection);
-  if (cBtn) cBtn.addEventListener('click', clearHighlight);
-  if (caBtn) caBtn.addEventListener('click', clearAllCustom);
+  if (hBtn) hBtn.addEventListener('mousedown', e => { e.preventDefault(); highlightSelection(); });
+  if (nBtn) nBtn.addEventListener('mousedown', e => { e.preventDefault(); addNoteToSelection(); });
+  if (cBtn) cBtn.addEventListener('mousedown', e => { e.preventDefault(); clearHighlight(); });
+  if (caBtn) caBtn.addEventListener('mousedown', e => { e.preventDefault(); clearAllCustom(); });
+
+  // Touch versiya tugmalarini ham ishlatish
+  [hBtn, nBtn, cBtn, caBtn].forEach(btn => {
+    if (btn) btn.addEventListener('touchend', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      btn.click();
+    });
+  });
 
   function handleSelectionEvent() {
     const selection = window.getSelection();
@@ -100,8 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const menuWidth = menu ? menu.offsetWidth : 120;
       const menuHeight = menu ? menu.offsetHeight : 30;
 
-      const x = rect.left + window.scrollX + (rect.width / 2) - (menuWidth / 2);
-      const y = rect.top + window.scrollY - menuHeight - 8;
+      // Menyuni tizim popup’iga yaqinroq chiqarish
+      const x = rect.left + window.scrollX;
+      const y = rect.bottom + window.scrollY + 5;
 
       showFloatingMenu(x, y);
     } else {
@@ -109,23 +129,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Tez ishlashi uchun selectionchange ishlatamiz
+  // Tez reaksiya uchun selectionchange ishlatamiz
   document.addEventListener('selectionchange', () => {
     setTimeout(handleSelectionEvent, 10);
   });
 
-  // Tashqariga bosilganda menyuni yopish
+  // Menyudan tashqariga bosilganda yopish
   document.addEventListener('click', e => {
     const menu = document.getElementById('floatingMenu');
     if (menu && !menu.contains(e.target) && window.getSelection().isCollapsed) {
       hideFloatingMenu();
     }
   });
-
-  // Mobil tizim popup'ni kamaytirish
-  document.addEventListener('touchstart', e => {
-    if (document.getElementById('floatingMenu')?.contains(e.target)) {
-      e.preventDefault();
-    }
-  }, { passive: false });
 });
