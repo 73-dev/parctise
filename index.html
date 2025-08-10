@@ -700,27 +700,23 @@
       <button id="clearAllBtn" class="float-btn">Clear All</button>
     </div>
 
-<!-- Fixed footer feedback -->
-<footer class="fixed bottom-0 left-0 w-full bg-white border-t shadow-lg">
-  <div class="max-w-2xl mx-auto p-3">
-    <!-- Messages -->
-    <div id="feedbackList" class="h-40 overflow-y-auto mb-2 p-2 bg-gray-50 rounded border text-sm"></div>
+    <!-- Feedback Section -->
+    <div class="max-w-2xl mx-auto mt-10 p-4 bg-white border rounded shadow-sm">
+      <h2 class="text-lg font-semibold mb-2">💬Comment and Feedback </h2>
 
-    <!-- Input row -->
-    <div class="flex gap-2">
-      <input id="feedbackName" type="text" placeholder="Ism"
-        class="border rounded px-2 py-1 w-24 text-sm">
-      <input id="feedbackInput" type="text" placeholder="Xabaringiz..."
-        class="flex-1 border rounded px-2 py-1 text-sm">
-      <button id="feedbackSendBtn"
-        class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
-        ➤
-      </button>
+      <!-- Messages -->
+      <div id="feedbackList" class="h-48 overflow-y-auto mb-3 p-2 bg-gray-50 rounded border text-sm"></div>
+
+      <!-- Input row -->
+      <div class="flex gap-2">
+        <input id="feedbackName" type="text" placeholder="Name" class="border rounded h-[40px] px-2 py-1 w-24 text-sm">
+        <input id="feedbackInput" type="text" placeholder="Messages..." class="flex-1 border rounded px-2 py-1 text-sm">
+        <button id="feedbackSendBtn"
+          class="bg-blue-500 hover:bg-blue-600 text-white h-[40px] px-3 py-1 rounded text-sm">
+          ➤
+        </button>
+      </div>
     </div>
-  </div>
-</footer>
-
-
 
 
 
@@ -728,7 +724,7 @@
   </div>
   </div>
   <!-- Scriptlar -->
-   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="./script.js"></script>
