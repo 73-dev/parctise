@@ -1,68 +1,77 @@
-// === Tanlangan matnni span bilan o'rash (mobil + desktop ishlaydi) ===
-function wrapSelection(className, noteText) {
+let savedSelection = null;
+
+// === Selection’ni saqlash ===
+function saveSelection() {
   const selection = window.getSelection();
-  if (!selection.rangeCount) return;
-  const range = selection.getRangeAt(0);
-  if (range.collapsed) return;
+  if (selection.rangeCount > 0) {
+    savedSelection = selection.getRangeAt(0).cloneRange();
+  }
+}
+
+// === Saqlangan selection’dan foydalanish ===
+function restoreSelection() {
+  if (!savedSelection) return null;
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(savedSelection);
+  return savedSelection;
+}
+
+// === Tanlangan matnni span bilan o‘rash (mobil + desktop) ===
+function wrapSavedSelection(className, noteText) {
+  const range = restoreSelection();
+  if (!range || range.collapsed) return;
 
   const span = document.createElement('span');
   span.className = className;
   if (noteText) span.setAttribute('data-note', noteText);
 
-  // Tanlangan kontentni olib span ichiga solamiz (surroundContents cheklovidan qochish uchun)
   const contents = range.extractContents();
   span.appendChild(contents);
-
   range.insertNode(span);
-  selection.removeAllRanges();
+
+  savedSelection = null;
+  window.getSelection().removeAllRanges();
 }
 
-// === Highlight qo'shish ===
+// === Highlight qo‘shish ===
 function highlightSelection() {
-  wrapSelection('highlight');
+  wrapSavedSelection('highlight');
   hideFloatingMenu();
 }
 
-// === Note qo'shish ===
+// === Note qo‘shish ===
 function addNoteToSelection() {
   const noteText = prompt("Note matnini kiriting:");
-  if (noteText) wrapSelection('note', noteText);
+  if (noteText) wrapSavedSelection('note', noteText);
   hideFloatingMenu();
 }
 
-// === Tanlangan highlightlarni o'chirish ===
+// === Tanlangan highlightlarni o‘chirish ===
 function clearHighlight() {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) return;
-  const range = selection.getRangeAt(0);
-  if (range.collapsed) return;
+  const range = restoreSelection();
+  if (!range || range.collapsed) return;
 
-  const highlights = document.querySelectorAll('.highlight');
-  highlights.forEach(span => {
+  document.querySelectorAll('.highlight').forEach(span => {
     if (range.intersectsNode(span)) {
       const parent = span.parentNode;
       while (span.firstChild) parent.insertBefore(span.firstChild, span);
-      parent.removeChild(span);
+      span.remove();
     }
   });
 
+  savedSelection = null;
+  window.getSelection().removeAllRanges();
   hideFloatingMenu();
 }
 
 // === Hammasini tozalash ===
 function clearAllCustom() {
-  document.querySelectorAll('input[type="text"], textarea').forEach(i => i.value = '');
-  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(i => i.checked = false);
-
   document.querySelectorAll('.highlight, .note').forEach(span => {
     const parent = span.parentNode;
     while (span.firstChild) parent.insertBefore(span.firstChild, span);
-    parent.removeChild(span);
+    span.remove();
   });
-
-  const res = document.getElementById('quiz-results-container');
-  if (res) res.remove();
-
   hideFloatingMenu();
 }
 
@@ -70,9 +79,10 @@ function clearAllCustom() {
 function showFloatingMenu(x, y) {
   const menu = document.getElementById('floatingMenu');
   if (menu) {
-    menu.style.left = x + 'px';
-    menu.style.top = y + 'px';
+    menu.style.left = `${x}px`;
+    menu.style.top = `${y}px`;
     menu.style.display = 'flex';
+    menu.style.zIndex = 9999;
   }
 }
 
@@ -88,21 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const cBtn = document.getElementById('clearHighlightBtn');
   const caBtn = document.getElementById('clearAllBtn');
 
-  if (hBtn) hBtn.addEventListener('click', highlightSelection);
-  if (nBtn) nBtn.addEventListener('click', addNoteToSelection);
-  if (cBtn) cBtn.addEventListener('click', clearHighlight);
-  if (caBtn) caBtn.addEventListener('click', clearAllCustom);
+  // Tugma bosishda selection yo‘qolmasligi uchun touchstart + mousedown
+  [[hBtn, highlightSelection], [nBtn, addNoteToSelection], [cBtn, clearHighlight], [caBtn, clearAllCustom]]
+    .forEach(([btn, handler]) => {
+      if (!btn) return;
+      btn.addEventListener('mousedown', e => { e.preventDefault(); handler(); });
+      btn.addEventListener('touchstart', e => { e.preventDefault(); handler(); }, { passive: false });
+    });
 
   function handleSelectionEvent() {
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed) {
+      saveSelection();
       const rect = selection.getRangeAt(0).getBoundingClientRect();
       const menu = document.getElementById('floatingMenu');
       const menuWidth = menu ? menu.offsetWidth : 120;
       const menuHeight = menu ? menu.offsetHeight : 30;
 
       const x = rect.left + window.scrollX + (rect.width / 2) - (menuWidth / 2);
-      const y = rect.top + window.scrollY - menuHeight - 8;
+      const y = rect.bottom + window.scrollY + 6; // pastroqqa chiqadi
 
       showFloatingMenu(x, y);
     } else {
@@ -110,15 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // PC uchun
+  // Desktop
   document.addEventListener('mouseup', handleSelectionEvent);
 
-  // Mobil uchun (touchend bilan)
+  // Mobile (Google menu bilan yonma-yon chiqishi uchun kichik delay bilan)
   document.addEventListener('touchend', () => {
-    setTimeout(handleSelectionEvent, 100);
+    setTimeout(handleSelectionEvent, 50);
   });
 
-  // Tashqariga bosilganda menyuni yopish
+  // Tashqariga bosganda menyuni yopish
   document.addEventListener('click', e => {
     const menu = document.getElementById('floatingMenu');
     if (menu && !menu.contains(e.target) && window.getSelection().isCollapsed) {
